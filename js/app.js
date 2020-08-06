@@ -97,3 +97,31 @@ function moveRight() {
   }
   draw();
 }
+
+// Move left and prevent collisions from shapes moving left
+function moveLeft() {
+  undraw();
+  const isAtLeftEdge = current.some(
+    (index) => (currentPosition + index) % width === 0
+  );
+  if (!isAtLeftEdge) currentPosition -= 1;
+  if (
+    current.some((index) =>
+      squares[currentPosition + index].classList.contains("block2")
+    )
+  ) {
+    currentPosition += 1;
+  }
+  draw();
+}
+
+// Rotate tetromino
+function rotate() {
+  undraw();
+  currentRotation++;
+  if (currentRotation === current.length) {
+    currentRotation = 0;
+  }
+  current = tetrominoes[random][currentPosition];
+  draw();
+}
