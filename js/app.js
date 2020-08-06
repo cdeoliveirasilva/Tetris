@@ -1,7 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const grid = document.querySelector(".grid");
+  let squares = Array.from(grid.querySelectorAll("div"));
   const width = 10;
   const height = 20;
+
+  // currentPosition = 4 is in div 5
+  let currentPosition = 4;
 
   // Tetrominoes (and their four rotations)
 
@@ -48,3 +52,48 @@ document.addEventListener("DOMContentLoaded", () => {
     iTetromino,
   ];
 });
+
+// Select random tetromino
+
+let random = math.Floor(Math.random() * tetrominoes.length);
+let currentRotation = 0;
+let current = tetrominoes[random][currentRotation];
+
+// Draw the shape
+function draw() {
+  current.forEach((index) =>
+    squares[currentPosition + index].classList.add("block")
+  );
+}
+
+// Undraw the shape, get rid of class "block"
+function undraw() {
+  current.forEach((index) =>
+    squares[currentPosition + index].classList.remove("block")
+  );
+}
+
+// Move shape down
+function moveDown() {
+  undraw();
+  currentPosition = currentPosition += width;
+  draw();
+  freeze();
+}
+
+// Move right and prevent collisions from shapes moving left
+function moveRight() {
+  undraw();
+  const isAtRightEdge = current.some(
+    (index) => (currentPosition + index) % width === width - 1
+  );
+  if (!isAtRightEdge) currentPosition += 1;
+  if (
+    current.some((index) =>
+      squares[currentPosition + index].classList.contains("block")
+    )
+  ) {
+    currentPosition -= 1;
+  }
+  draw();
+}
