@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const startBtn = document.querySelector("button");
   const grid = document.querySelector(".grid");
   const displaySquares = document.querySelectorAll(".previous-grid div");
   let squares = Array.from(grid.querySelectorAll("div"));
@@ -6,21 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const height = 20;
   let currentPosition = 4;
   let nextRandom = 0;
+  let timerId;
 
   // assign functions to keycodes
   // 37 = left, 38 = up, 39 = right, 40 = down
   function control(e) {
-    if (e.KeyCode === 39) {
+    if (e.keyCode === 39) {
       moveRight();
-    } else if (e.KeyCode === 38) {
+    } else if (e.keyCode === 38) {
       rotate();
-    } else if (e.KeyCode === 37) {
+    } else if (e.keyCode === 37) {
       moveLeft();
-    } else if (e.KeyCode === 40) {
+    } else if (e.keyCode === 40) {
       moveDown();
     }
   }
-  document.addEventListener("keyup", control);
+  document.addEventListener("keydown", control);
 
   // Tetrominoes (and their four rotations)
 
@@ -160,5 +162,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  displayShape();
+  // Freeze the tetromino in place
+  function freeze() {
+    if (
+      current.some(
+        (index) =>
+          squares[currentPosition + index + index].classList.contains(
+            "block3"
+          ) ||
+          squares[currentPosition + index + width].classList.contains("block2")
+      )
+    ) {
+      current.forEach((index) =>
+        squares[index + currentPosition].classList.add("block2")
+      );
+
+      random = nextRandom;
+      nextRandom = Math.floor(Math.random() * theTetrominoes.length);
+      current = theTetrominoes[random][currentRotation];
+      currentPosition = 4;
+      draw();
+      displayShape();
+    }
+  }
+
+  startBtn.addEventListener("click", () => {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    } else {
+      draw();
+      timerId = setInterval(moveDown, 1000);
+      nextRandom = Math.floor(Math.random() * theTetrominoes.length);
+      displayShape();
+    }
+  });
 });
